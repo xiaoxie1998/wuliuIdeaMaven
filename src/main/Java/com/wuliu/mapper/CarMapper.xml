@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wuliu.mapper.CarMapper" >
+  <resultMap id="BaseResultMap" type="com.wuliu.entity.Car" >
+    <id column="carID" property="carid" jdbcType="INTEGER" />
+    <result column="cardNo" property="cardno" jdbcType="VARCHAR" />
+    <result column="carName" property="carname" jdbcType="VARCHAR" />
+    <result column="model" property="model" jdbcType="VARCHAR" />
+    <!--<result column="customerID" property="customer.customerid" jdbcType="INTEGER" />-->
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="contact" property="contact" jdbcType="VARCHAR" />
+    <result column="qq" property="qq" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <!--<result column="areaID" property="area.areaid" jdbcType="INTEGER" />-->
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="demo" property="demo" jdbcType="VARCHAR" />
+
+    <!--area所在区域分步式查询-->
+    <association property="area" column="areaID" select="com.wuliu.mapper.AreaMapper.selectByPrimaryKey" javaType="com.wuliu.entity.Area" />
+
+
+    <!--customer公司名称（客户名称）分布查询-->
+    <association property="customer" column="customerID" select="com.wuliu.mapper.CustomerMapper.selectByPrimaryKey" />
+
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    carID, cardNo, carName, model, customerID, mobile, contact, qq, email, areaID, status, 
+    demo
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.wuliu.entity.CarExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from car
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="currPage != null and limit != null">
+      limit ${currPage},${limit}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from car
+    where carID = #{carid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from car
+    where carID = #{carid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.wuliu.entity.CarExample" >
+    delete from car
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.wuliu.entity.Car" >
+    insert into car (carID, cardNo, carName, 
+      model, customerID, mobile, 
+      contact, qq, email, 
+      areaID, status, demo
+      )
+    values (#{carid,jdbcType=INTEGER}, #{cardno,jdbcType=VARCHAR}, #{carname,jdbcType=VARCHAR}, 
+      #{model,jdbcType=VARCHAR}, #{customer.customerid,jdbcType=INTEGER}, #{mobile,jdbcType=VARCHAR},
+      #{contact,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{area.areaid,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, #{demo,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wuliu.entity.Car" >
+    insert into car
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="carid != null" >
+        carID,
+      </if>
+      <if test="cardno != null" >
+        cardNo,
+      </if>
+      <if test="carname != null" >
+        carName,
+      </if>
+      <if test="model != null" >
+        model,
+      </if>
+      <if test="customer.customerid != null" >
+        customerID,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="contact != null" >
+        contact,
+      </if>
+      <if test="qq != null" >
+        qq,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="area.areaid != null" >
+        areaID,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="demo != null" >
+        demo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="carid != null" >
+        #{carid,jdbcType=INTEGER},
+      </if>
+      <if test="cardno != null" >
+        #{cardno,jdbcType=VARCHAR},
+      </if>
+      <if test="carname != null" >
+        #{carname,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null" >
+        #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="customer.customerid != null" >
+        #{customer.customerid,jdbcType=INTEGER},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="contact != null" >
+        #{contact,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null" >
+        #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="area.areaid != null" >
+        #{area.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="demo != null" >
+        #{demo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.wuliu.entity.CarExample" resultType="java.lang.Integer" >
+    select count(*) from car
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update car
+    <set >
+      <if test="record.carid != null" >
+        carID = #{record.carid,jdbcType=INTEGER},
+      </if>
+      <if test="record.cardno != null" >
+        cardNo = #{record.cardno,jdbcType=VARCHAR},
+      </if>
+      <if test="record.carname != null" >
+        carName = #{record.carname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.model != null" >
+        model = #{record.model,jdbcType=VARCHAR},
+      </if>
+      <if test="record.customer.customerid != null" >
+        customerID = #{record.customer.customerid,jdbcType=INTEGER},
+      </if>
+      <if test="record.mobile != null" >
+        mobile = #{record.mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contact != null" >
+        contact = #{record.contact,jdbcType=VARCHAR},
+      </if>
+      <if test="record.qq != null" >
+        qq = #{record.qq,jdbcType=VARCHAR},
+      </if>
+      <if test="record.email != null" >
+        email = #{record.email,jdbcType=VARCHAR},
+      </if>
+      <if test="record.area.areaid != null" >
+        areaID = #{record.area.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=VARCHAR},
+      </if>
+      <if test="record.demo != null" >
+        demo = #{record.demo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update car
+    set carID = #{record.carid,jdbcType=INTEGER},
+      cardNo = #{record.cardno,jdbcType=VARCHAR},
+      carName = #{record.carname,jdbcType=VARCHAR},
+      model = #{record.model,jdbcType=VARCHAR},
+      customerID = #{record.customer.customerid,jdbcType=INTEGER},
+      mobile = #{record.mobile,jdbcType=VARCHAR},
+      contact = #{record.contact,jdbcType=VARCHAR},
+      qq = #{record.qq,jdbcType=VARCHAR},
+      email = #{record.email,jdbcType=VARCHAR},
+      areaID = #{record.area.areaid,jdbcType=INTEGER},
+      status = #{record.status,jdbcType=VARCHAR},
+      demo = #{record.demo,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wuliu.entity.Car" >
+    update car
+    <set >
+      <if test="cardno != null" >
+        cardNo = #{cardno,jdbcType=VARCHAR},
+      </if>
+      <if test="carname != null" >
+        carName = #{carname,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null" >
+        model = #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="customer.customerid != null" >
+        customerID = #{customer.customerid,jdbcType=INTEGER},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="contact != null" >
+        contact = #{contact,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null" >
+        qq = #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="area.areaid != null" >
+        areaID = #{area.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="demo != null" >
+        demo = #{demo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where carID = #{carid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wuliu.entity.Car" >
+    update car
+    set cardNo = #{cardno,jdbcType=VARCHAR},
+      carName = #{carname,jdbcType=VARCHAR},
+      model = #{model,jdbcType=VARCHAR},
+      customerID = #{customer.customerid,jdbcType=INTEGER},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      contact = #{contact,jdbcType=VARCHAR},
+      qq = #{qq,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      areaID = #{area.areaid,jdbcType=INTEGER},
+      status = #{status,jdbcType=VARCHAR},
+      demo = #{demo,jdbcType=VARCHAR}
+    where carID = #{carid,jdbcType=INTEGER}
+  </update>
+</mapper>

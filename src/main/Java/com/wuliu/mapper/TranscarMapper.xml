@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wuliu.mapper.TranscarMapper" >
+  <resultMap id="BaseResultMap" type="com.wuliu.entity.Transcar" >
+    <id column="transID" property="transid" jdbcType="INTEGER" />
+    <!--<result column="carID" property="car.carid" jdbcType="INTEGER" />-->
+    <result column="gcount" property="gcount" jdbcType="DECIMAL" />
+    <!--<result column="sendCity" property="sendcity.areaid" jdbcType="INTEGER" />-->
+    <!--<result column="receCity" property="rececity.areaid" jdbcType="INTEGER" />-->
+    <result column="driver" property="driver" jdbcType="VARCHAR" />
+    <result column="driverTel" property="drivertel" jdbcType="VARCHAR" />
+    <result column="master" property="master" jdbcType="VARCHAR" />
+    <result column="masterTel" property="mastertel" jdbcType="VARCHAR" />
+    <!--<result column="sendTypeID" property="sendtype.sendtypeid" jdbcType="INTEGER" />-->
+    <result column="sendTime" property="sendtime" jdbcType="TIMESTAMP" />
+    <result column="sendFee" property="sendfee" jdbcType="DECIMAL" />
+    <result column="carFee" property="carfee" jdbcType="DECIMAL" />
+    <result column="carStatus" property="carstatus" jdbcType="VARCHAR" />
+    <result column="demo" property="demo" jdbcType="VARCHAR" />
+
+    <!--Car数据分步式查询-->
+    <association property="car" column="carID" select="com.wuliu.mapper.CarMapper.selectByPrimaryKey" javaType="com.wuliu.entity.Car"/>
+
+    <!--sendcity出发地分步式查询-->
+    <association property="sendcity" column="sendCity" select="com.wuliu.mapper.AreaMapper.selectByPrimaryKey" javaType="com.wuliu.entity.Area"/>
+
+    <!--rececity目的地分步式查询-->
+    <association property="rececity" column="receCity" select="com.wuliu.mapper.AreaMapper.selectByPrimaryKey" javaType="com.wuliu.entity.Area" />
+
+    <!--sendtype运输工具分步式查询-->
+    <association property="sendtype" column="sendTypeID" select="com.wuliu.mapper.SendtypeMapper.selectByPrimaryKey" javaType="com.wuliu.entity.Sendtype" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    transID, carID, gcount, sendCity, receCity, driver, driverTel, master, masterTel, 
+    sendTypeID, sendTime, sendFee, carFee, carStatus, demo
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.wuliu.entity.TranscarExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from transcar
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="currPage != null and limit != null">
+      limit ${currPage},${limit}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from transcar
+    where transID = #{transid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from transcar
+    where transID = #{transid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.wuliu.entity.TranscarExample" >
+    delete from transcar
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.wuliu.entity.Transcar" >
+    insert into transcar (transID, carID, gcount, 
+      sendCity, receCity, driver, 
+      driverTel, master, masterTel, 
+      sendTypeID, sendTime, sendFee, 
+      carFee, carStatus, demo
+      )
+    values (#{transid,jdbcType=INTEGER}, #{car.carid,jdbcType=INTEGER}, #{gcount,jdbcType=DECIMAL},
+      #{sendcity.areaid,jdbcType=INTEGER}, #{rececity.areaid,jdbcType=INTEGER}, #{driver,jdbcType=VARCHAR},
+      #{drivertel,jdbcType=VARCHAR}, #{master,jdbcType=VARCHAR}, #{mastertel,jdbcType=VARCHAR}, 
+      #{sendtype.sendtypeid,jdbcType=INTEGER}, #{sendtime,jdbcType=TIMESTAMP}, #{sendfee,jdbcType=DECIMAL},
+      #{carfee,jdbcType=DECIMAL}, #{carstatus,jdbcType=VARCHAR}, #{demo,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wuliu.entity.Transcar" >
+    insert into transcar
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="transid != null" >
+        transID,
+      </if>
+      <if test="car.carid != null" >
+        carID,
+      </if>
+      <if test="gcount != null" >
+        gcount,
+      </if>
+      <if test="sendcity.areaid != null" >
+        sendCity,
+      </if>
+      <if test="rececity.areaid != null" >
+        receCity,
+      </if>
+      <if test="driver != null" >
+        driver,
+      </if>
+      <if test="drivertel != null" >
+        driverTel,
+      </if>
+      <if test="master != null" >
+        master,
+      </if>
+      <if test="mastertel != null" >
+        masterTel,
+      </if>
+      <if test="sendtype.sendtypeid != null" >
+        sendTypeID,
+      </if>
+      <if test="sendtime != null" >
+        sendTime,
+      </if>
+      <if test="sendfee != null" >
+        sendFee,
+      </if>
+      <if test="carfee != null" >
+        carFee,
+      </if>
+      <if test="carstatus != null" >
+        carStatus,
+      </if>
+      <if test="demo != null" >
+        demo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="transid != null" >
+        #{transid,jdbcType=INTEGER},
+      </if>
+      <if test="car.carid != null" >
+        #{car.carid,jdbcType=INTEGER},
+      </if>
+      <if test="gcount != null" >
+        #{gcount,jdbcType=DECIMAL},
+      </if>
+      <if test="sendcity.areaid != null" >
+        #{sendcity.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="rececity.areaid != null" >
+        #{rececity.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="driver != null" >
+        #{driver,jdbcType=VARCHAR},
+      </if>
+      <if test="drivertel != null" >
+        #{drivertel,jdbcType=VARCHAR},
+      </if>
+      <if test="master != null" >
+        #{master,jdbcType=VARCHAR},
+      </if>
+      <if test="mastertel != null" >
+        #{mastertel,jdbcType=VARCHAR},
+      </if>
+      <if test="sendtype.sendtypeid != null" >
+        #{sendtype.sendtypeid,jdbcType=INTEGER},
+      </if>
+      <if test="sendtime != null" >
+        #{sendtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendfee != null" >
+        #{sendfee,jdbcType=DECIMAL},
+      </if>
+      <if test="carfee != null" >
+        #{carfee,jdbcType=DECIMAL},
+      </if>
+      <if test="carstatus != null" >
+        #{carstatus,jdbcType=VARCHAR},
+      </if>
+      <if test="demo != null" >
+        #{demo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.wuliu.entity.TranscarExample" resultType="java.lang.Integer" >
+    select count(*) from transcar
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update transcar
+    <set >
+      <if test="record.transid != null" >
+        transID = #{record.transid,jdbcType=INTEGER},
+      </if>
+      <if test="record.car.carid != null" >
+        carID = #{record.car.carid,jdbcType=INTEGER},
+      </if>
+      <if test="record.gcount != null" >
+        gcount = #{record.gcount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.sendcity.areaid != null" >
+        sendCity = #{record.sendcity.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="record.rececity.areaid != null" >
+        receCity = #{record.rececity.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="record.driver != null" >
+        driver = #{record.driver,jdbcType=VARCHAR},
+      </if>
+      <if test="record.drivertel != null" >
+        driverTel = #{record.drivertel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.master != null" >
+        master = #{record.master,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mastertel != null" >
+        masterTel = #{record.mastertel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sendtype.sendtypeid != null" >
+        sendTypeID = #{record.sendtype.sendtypeid,jdbcType=INTEGER},
+      </if>
+      <if test="record.sendtime != null" >
+        sendTime = #{record.sendtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.sendfee != null" >
+        sendFee = #{record.sendfee,jdbcType=DECIMAL},
+      </if>
+      <if test="record.carfee != null" >
+        carFee = #{record.carfee,jdbcType=DECIMAL},
+      </if>
+      <if test="record.carstatus != null" >
+        carStatus = #{record.carstatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.demo != null" >
+        demo = #{record.demo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update transcar
+    set transID = #{record.transid,jdbcType=INTEGER},
+      carID = #{record.car.carid,jdbcType=INTEGER},
+      gcount = #{record.gcount,jdbcType=DECIMAL},
+      sendCity = #{record.sendcity.areaid,jdbcType=INTEGER},
+      receCity = #{record.rececity.areaid,jdbcType=INTEGER},
+      driver = #{record.driver,jdbcType=VARCHAR},
+      driverTel = #{record.drivertel,jdbcType=VARCHAR},
+      master = #{record.master,jdbcType=VARCHAR},
+      masterTel = #{record.mastertel,jdbcType=VARCHAR},
+      sendTypeID = #{record.sendtype.sendtypeid,jdbcType=INTEGER},
+      sendTime = #{record.sendtime,jdbcType=TIMESTAMP},
+      sendFee = #{record.sendfee,jdbcType=DECIMAL},
+      carFee = #{record.carfee,jdbcType=DECIMAL},
+      carStatus = #{record.carstatus,jdbcType=VARCHAR},
+      demo = #{record.demo,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wuliu.entity.Transcar" >
+    update transcar
+    <set >
+      <if test="car.carid != null" >
+        carID = #{car.carid,jdbcType=INTEGER},
+      </if>
+      <if test="gcount != null" >
+        gcount = #{gcount,jdbcType=DECIMAL},
+      </if>
+      <if test="sendcity.areaid != null" >
+        sendCity = #{sendcity.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="rececity.areaid != null" >
+        receCity = #{rececity.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="driver != null" >
+        driver = #{driver,jdbcType=VARCHAR},
+      </if>
+      <if test="drivertel != null" >
+        driverTel = #{drivertel,jdbcType=VARCHAR},
+      </if>
+      <if test="master != null" >
+        master = #{master,jdbcType=VARCHAR},
+      </if>
+      <if test="mastertel != null" >
+        masterTel = #{mastertel,jdbcType=VARCHAR},
+      </if>
+      <if test="sendtype.sendtypeid != null" >
+        sendTypeID = #{sendtype.sendtypeid,jdbcType=INTEGER},
+      </if>
+      <if test="sendtime != null" >
+        sendTime = #{sendtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendfee != null" >
+        sendFee = #{sendfee,jdbcType=DECIMAL},
+      </if>
+      <if test="carfee != null" >
+        carFee = #{carfee,jdbcType=DECIMAL},
+      </if>
+      <if test="carstatus != null" >
+        carStatus = #{carstatus,jdbcType=VARCHAR},
+      </if>
+      <if test="demo != null" >
+        demo = #{demo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where transID = #{transid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wuliu.entity.Transcar" >
+    update transcar
+    set carID = #{car.carid,jdbcType=INTEGER},
+      gcount = #{gcount,jdbcType=DECIMAL},
+      sendCity = #{sendcity.areaid,jdbcType=INTEGER},
+      receCity = #{rececity.areaid,jdbcType=INTEGER},
+      driver = #{driver,jdbcType=VARCHAR},
+      driverTel = #{drivertel,jdbcType=VARCHAR},
+      master = #{master,jdbcType=VARCHAR},
+      masterTel = #{mastertel,jdbcType=VARCHAR},
+      sendTypeID = #{sendtype.sendtypeid,jdbcType=INTEGER},
+      sendTime = #{sendtime,jdbcType=TIMESTAMP},
+      sendFee = #{sendfee,jdbcType=DECIMAL},
+      carFee = #{carfee,jdbcType=DECIMAL},
+      carStatus = #{carstatus,jdbcType=VARCHAR},
+      demo = #{demo,jdbcType=VARCHAR}
+    where transID = #{transid,jdbcType=INTEGER}
+  </update>
+</mapper>

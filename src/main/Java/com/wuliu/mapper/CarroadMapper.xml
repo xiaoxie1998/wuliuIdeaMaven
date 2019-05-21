@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wuliu.mapper.CarroadMapper" >
+  <resultMap id="BaseResultMap" type="com.wuliu.entity.Carroad" >
+    <id column="roadID" property="roadid" jdbcType="INTEGER" />
+    <!--<result column="transID" property="transcar.transid" jdbcType="INTEGER" />-->
+    <!--<result column="startCity" property="startcity.areaid" jdbcType="INTEGER" />-->
+    <result column="startTime" property="starttime" jdbcType="TIMESTAMP" />
+    <!--<result column="endCity" property="endcity.areaid" jdbcType="INTEGER" />-->
+    <result column="endTime" property="endtime" jdbcType="TIMESTAMP" />
+
+    <!--Transcar数据分步式查询-->
+    <association property="transcar" column="transID"  select="com.wuliu.mapper.TranscarMapper.selectByPrimaryKey" />
+
+    <!--sendcity出发地分步式查询-->
+    <association property="startcity" column="startCity" select="com.wuliu.mapper.AreaMapper.selectByPrimaryKey" javaType="com.wuliu.entity.Area"/>
+
+
+    <!--rececity目的地分步式查询-->
+    <association property="endcity" column="endCity" select="com.wuliu.mapper.AreaMapper.selectByPrimaryKey" javaType="com.wuliu.entity.Area" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    roadID, transID, startCity, startTime, endCity, endTime
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.wuliu.entity.CarroadExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from carroad
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="currPage != null and limit != null">
+      limit ${currPage},${limit}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from carroad
+    where roadID = #{roadid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from carroad
+    where roadID = #{roadid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.wuliu.entity.CarroadExample" >
+    delete from carroad
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.wuliu.entity.Carroad" >
+    insert into carroad (roadID, transID, startCity, 
+      startTime, endCity, endTime
+      )
+    values (#{roadid,jdbcType=INTEGER}, #{transcar.transid,jdbcType=INTEGER}, #{startcity.areaid,jdbcType=INTEGER},
+      #{starttime,jdbcType=TIMESTAMP}, #{endcity.areaid,jdbcType=INTEGER}, #{endtime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wuliu.entity.Carroad" >
+    insert into carroad
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="roadid != null" >
+        roadID,
+      </if>
+      <if test="transcar.transid != null" >
+        transID,
+      </if>
+      <if test="startcity.areaid != null" >
+        startCity,
+      </if>
+      <if test="starttime != null" >
+        startTime,
+      </if>
+      <if test="endcity.areaid != null" >
+        endCity,
+      </if>
+      <if test="endtime != null" >
+        endTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="roadid != null" >
+        #{roadid,jdbcType=INTEGER},
+      </if>
+      <if test="transcar.transid != null" >
+        #{transcar.transid,jdbcType=INTEGER},
+      </if>
+      <if test="startcity.areaid != null" >
+        #{startcity.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="starttime != null" >
+        #{starttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endcity.areaid != null" >
+        #{endcity.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="endtime != null" >
+        #{endtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.wuliu.entity.CarroadExample" resultType="java.lang.Integer" >
+    select count(*) from carroad
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update carroad
+    <set >
+      <if test="record.roadid != null" >
+        roadID = #{record.roadid,jdbcType=INTEGER},
+      </if>
+      <if test="record.transcar.transid != null" >
+        transID = #{record.transcar.transid,jdbcType=INTEGER},
+      </if>
+      <if test="record.startcity.areaid != null" >
+        startCity = #{record.startcity.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="record.starttime != null" >
+        startTime = #{record.starttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.endcity.areaid != null" >
+        endCity = #{record.endcity.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="record.endtime != null" >
+        endTime = #{record.endtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update carroad
+    set roadID = #{record.roadid,jdbcType=INTEGER},
+      transID = #{record.transcar.transid,jdbcType=INTEGER},
+      startCity = #{record.startcity.areaid,jdbcType=INTEGER},
+      startTime = #{record.starttime,jdbcType=TIMESTAMP},
+      endCity = #{record.endcity.areaid,jdbcType=INTEGER},
+      endTime = #{record.endtime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wuliu.entity.Carroad" >
+    update carroad
+    <set >
+      <if test="transcar.transid != null" >
+        transID = #{transcar.transid,jdbcType=INTEGER},
+      </if>
+      <if test="startcity.areaid != null" >
+        startCity = #{startcity.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="starttime != null" >
+        startTime = #{starttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endcity.areaid != null" >
+        endCity = #{endcity.areaid,jdbcType=INTEGER},
+      </if>
+      <if test="endtime != null" >
+        endTime = #{endtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where roadID = #{roadid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wuliu.entity.Carroad" >
+    update carroad
+    set transID = #{transcar.transid,jdbcType=INTEGER},
+      startCity = #{startcity.areaid,jdbcType=INTEGER},
+      startTime = #{starttime,jdbcType=TIMESTAMP},
+      endCity = #{endcity.areaid,jdbcType=INTEGER},
+      endTime = #{endtime,jdbcType=TIMESTAMP}
+    where roadID = #{roadid,jdbcType=INTEGER}
+  </update>
+</mapper>

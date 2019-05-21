@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wuliu.mapper.BalanceMapper" >
+  <resultMap id="BaseResultMap" type="com.wuliu.entity.Balance" >
+    <id column="balanceID" property="balanceid" jdbcType="INTEGER" />
+    <!--<result column="customerID" property="customer.customerid" jdbcType="INTEGER" />-->
+    <result column="faceFee" property="facefee" jdbcType="DECIMAL" />
+    <result column="paidType" property="paidtype" jdbcType="VARCHAR" />
+    <result column="paidTime" property="paidtime" jdbcType="TIMESTAMP" />
+    <result column="oprTime" property="oprtime" jdbcType="TIMESTAMP" />
+    <!--<result column="userID" property="users.id" jdbcType="INTEGER" />-->
+    <result column="isvalID" property="isvalid" jdbcType="VARCHAR" />
+    <result column="demo" property="demo" jdbcType="VARCHAR" />
+
+    <!--客户信息分布查询-->
+    <association property="customer" column="customerID" select="com.wuliu.mapper.CustomerMapper.selectByPrimaryKey"/>
+
+    <!--用户信息分布查询-->
+    <association property="users" column="userID" select="com.wuliu.mapper.UsersMapper.selectByPrimaryKey">
+      <id column="id" property="id" jdbcType="INTEGER" />
+      <result column="username" property="username" jdbcType="VARCHAR" />
+    </association>
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    balanceID, customerID, faceFee, paidType, paidTime, oprTime, userID, isvalID, demo
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.wuliu.entity.BalanceExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from balance
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="currPage != null and limit != null">
+      limit ${currPage},${limit}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from balance
+    where balanceID = #{balanceid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from balance
+    where balanceID = #{balanceid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.wuliu.entity.BalanceExample" >
+    delete from balance
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.wuliu.entity.Balance" >
+    insert into balance (balanceID, customerID, faceFee, 
+      paidType, paidTime, oprTime, 
+      userID, isvalID, demo
+      )
+    values (#{balanceid,jdbcType=INTEGER}, #{customer.customerid,jdbcType=INTEGER}, #{facefee,jdbcType=DECIMAL},
+      #{paidtype,jdbcType=VARCHAR}, #{paidtime,jdbcType=TIMESTAMP}, #{oprtime,jdbcType=TIMESTAMP}, 
+      #{users.id,jdbcType=INTEGER}, #{isvalid,jdbcType=VARCHAR}, #{demo,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wuliu.entity.Balance" >
+    insert into balance
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="balanceid != null" >
+        balanceID,
+      </if>
+      <if test="customer.customerid != null" >
+        customerID,
+      </if>
+      <if test="facefee != null" >
+        faceFee,
+      </if>
+      <if test="paidtype != null" >
+        paidType,
+      </if>
+      <if test="paidtime != null" >
+        paidTime,
+      </if>
+      <if test="oprtime != null" >
+        oprTime,
+      </if>
+      <if test="users.id != null" >
+        userID,
+      </if>
+      <if test="isvalid != null" >
+        isvalID,
+      </if>
+      <if test="demo != null" >
+        demo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="balanceid != null" >
+        #{balanceid,jdbcType=INTEGER},
+      </if>
+      <if test="customer.customerid != null" >
+        #{customer.customerid,jdbcType=INTEGER},
+      </if>
+      <if test="facefee != null" >
+        #{facefee,jdbcType=DECIMAL},
+      </if>
+      <if test="paidtype != null" >
+        #{paidtype,jdbcType=VARCHAR},
+      </if>
+      <if test="paidtime != null" >
+        #{paidtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="oprtime != null" >
+        #{oprtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="users.id != null" >
+        #{users.id,jdbcType=INTEGER},
+      </if>
+      <if test="isvalid != null" >
+        #{isvalid,jdbcType=VARCHAR},
+      </if>
+      <if test="demo != null" >
+        #{demo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.wuliu.entity.BalanceExample" resultType="java.lang.Integer" >
+    select count(*) from balance
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update balance
+    <set >
+      <if test="record.balanceid != null" >
+        balanceID = #{record.balanceid,jdbcType=INTEGER},
+      </if>
+      <if test="record.customer.customerid != null" >
+        customerID = #{record.customer.customerid,jdbcType=INTEGER},
+      </if>
+      <if test="record.facefee != null" >
+        faceFee = #{record.facefee,jdbcType=DECIMAL},
+      </if>
+      <if test="record.paidtype != null" >
+        paidType = #{record.paidtype,jdbcType=VARCHAR},
+      </if>
+      <if test="record.paidtime != null" >
+        paidTime = #{record.paidtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.oprtime != null" >
+        oprTime = #{record.oprtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.users.id != null" >
+        userID = #{record.users.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.isvalid != null" >
+        isvalID = #{record.isvalid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.demo != null" >
+        demo = #{record.demo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update balance
+    set balanceID = #{record.balanceid,jdbcType=INTEGER},
+      customerID = #{record.customer.customerid,jdbcType=INTEGER},
+      faceFee = #{record.facefee,jdbcType=DECIMAL},
+      paidType = #{record.paidtype,jdbcType=VARCHAR},
+      paidTime = #{record.paidtime,jdbcType=TIMESTAMP},
+      oprTime = #{record.oprtime,jdbcType=TIMESTAMP},
+      userID = #{record.users.id,jdbcType=INTEGER},
+      isvalID = #{record.isvalid,jdbcType=VARCHAR},
+      demo = #{record.demo,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wuliu.entity.Balance" >
+    update balance
+    <set >
+      <if test="customer.customerid != null" >
+        customerID = #{customer.customerid,jdbcType=INTEGER},
+      </if>
+      <if test="facefee != null" >
+        faceFee = #{facefee,jdbcType=DECIMAL},
+      </if>
+      <if test="paidtype != null" >
+        paidType = #{paidtype,jdbcType=VARCHAR},
+      </if>
+      <if test="paidtime != null" >
+        paidTime = #{paidtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="oprtime != null" >
+        oprTime = #{oprtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="users.id != null" >
+        userID = #{users.id,jdbcType=INTEGER},
+      </if>
+      <if test="isvalid != null" >
+        isvalID = #{isvalid,jdbcType=VARCHAR},
+      </if>
+      <if test="demo != null" >
+        demo = #{demo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where balanceID = #{balanceid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wuliu.entity.Balance" >
+    update balance
+    set customerID = #{customer.customerid,jdbcType=INTEGER},
+      faceFee = #{facefee,jdbcType=DECIMAL},
+      paidType = #{paidtype,jdbcType=VARCHAR},
+      paidTime = #{paidtime,jdbcType=TIMESTAMP},
+      oprTime = #{oprtime,jdbcType=TIMESTAMP},
+      userID = #{users.id,jdbcType=INTEGER},
+      isvalID = #{isvalid,jdbcType=VARCHAR},
+      demo = #{demo,jdbcType=VARCHAR}
+    where balanceID = #{balanceid,jdbcType=INTEGER}
+  </update>
+</mapper>
